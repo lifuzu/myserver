@@ -16,26 +16,28 @@ var chat = describe('Chat Server', function(){
   it('Should broadcast new user to all users', function(done) {
    var client1 = io.connect(url, options)
     client1.on('connect', function(data) {
-      client1.emit('add user', chatUser1)
+      client1.emit('add user', chatUser1.name)
       var client2 = io.connect(url, options);
       client2.on('connect', function(data) {
-        client2.emit('add user', chatUser2)
+        client2.emit('add user', chatUser2.name)
       })
-      client2.on('user joined', function(data) {
+      client1.on('user joined', function(data) {
         data.username.should.equal(chatUser2.name)
         client2.disconnect()
+        client1.disconnect()
+        done()
       })
     })
 
-    var numUsers = 0
-    client1.on('user joined', function(data) {
-      numUsers += 1
-      if (numUsers === 2) {
-        data.username.should.equal(chatUser2.name)
-        client1.disconnect()
-        done()
-      }
-    })
+    // var numUsers = 0
+    // client1.on('user joined', function(data) {
+    //   numUsers += 1
+    //   if (numUsers === 2) {
+    //     data.username.should.equal(chatUser2.name)
+    //     client1.disconnect()
+    //     done()
+    //   }
+    // })
   })
 
   it('Should be able to broadcast messages', function(done) {
@@ -45,10 +47,10 @@ var chat = describe('Chat Server', function(){
 
     var checkMessage = function(client) {
       client.on('chat message', function(msg) {
-        message.should.equal(msg.msg)
+        message.should.equal(msg.message)
         client.disconnect()
         messages++
-        if (messages === 3) { done() }
+        if (messages === 2) { done() }
       })
     }
 
@@ -95,17 +97,17 @@ var chat = describe('Chat Server', function(){
     checkPrivateMessage(client1)
 
     client1.on('connect', function(data) {
-      client1.emit('add user', chatUser1)
+      client1.emit('add user', chatUser1.name)
       client2 = io.connect(url, options)
       checkPrivateMessage(client2)
 
       client2.on('connect', function(data) {
-        client2.emit('add user', chatUser2)
+        client2.emit('add user', chatUser2.name)
         client3 = io.connect(url, options)
         checkPrivateMessage(client3)
 
         client3.on('connect', function(data) {
-          client3.emit('add user', chatUser3)
+          client3.emit('add user', chatUser3.name)
           client3.emit('private message', message)
         })
       })

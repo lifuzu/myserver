@@ -12,27 +12,35 @@ var server = http.listen(app.get('port'), function() {
 var clients = {}
 var numClients = 0
 io.on('connection', function(socket) {
+  var addedUser = false;
+
   socket.emit('news', { hello: 'world'});
   socket.on('my other event', function(data) {
     console.log(data);
   });
   // When the client emits 'chat message', ...
-  socket.on('chat message', function(msg){
-    io.emit('chat message', {
-      name: socket.username,
-      msg: msg
+  socket.on('chat message', function(message){
+    console.log({
+      username: socket.username,
+      message: message
+    })
+    socket.broadcast.emit('chat message', {
+      username: socket.username,
+      message: message
     });
   });
   // When the client emits 'add user', ...
-  socket.on('add user', function(user) {
+  socket.on('add user', function(username) {
+    console.log(username);
     // Store the username in the socket session for this client
-    socket.username = user.name
+    socket.username = username
     // Add the client's username to the global list
-    clients[user.name] = socket
+    clients[username] = socket
     ++numClients
+    addedUser = true
     io.emit('login', {numClients: numClients})
     // Echo globally that a person has connected
-    io.emit('user joined', {
+    socket.broadcast.emit('user joined', {
       username: socket.username,
       numClients: numClients
     });
@@ -56,12 +64,15 @@ io.on('connection', function(socket) {
   })
   // When the client emits 'disconnect', ...
   socket.on('disconnect', function() {
-    delete clients[socket.username]
-    --numClients
-    // Echo globally that this client has left
-    io.emit('user left', {
-      username: socket.username,
-      numClients: numClients
-    })
+    // Remove the username from global usernames list
+    if (addedUser) {
+      delete clients[socket.username]
+      --numClients
+      // Echo globally that this client has left
+      socket.broadcast.emit('user left', {
+        username: socket.username,
+        numClients: numClients
+      })
+    }
   })
 });
