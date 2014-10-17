@@ -30,12 +30,12 @@ io.on('connection', function(socket) {
     });
   });
   // When the client emits 'add user', ...
-  socket.on('add user', function(username) {
-    console.log(username);
+  socket.on('add user', function(user) {
+    console.log(user);
     // Store the username in the socket session for this client
-    socket.username = username
+    socket.username = user.name
     // Add the client's username to the global list
-    clients[username] = socket
+    clients[user.name] = socket
     ++numClients
     addedUser = true
     io.emit('login', {numClients: numClients})
