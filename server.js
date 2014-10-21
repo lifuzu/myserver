@@ -18,6 +18,11 @@ io.on('connection', function(socket) {
   socket.on('my other event', function(data) {
     console.log(data);
   });
+  // Support ionic clients
+  socket.on('message:send', function(message){
+    console.log(message)
+    io.emit('message:received', message);
+  });
   // When the client emits 'chat message', ...
   socket.on('chat message', function(message){
     console.log({

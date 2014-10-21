@@ -13,7 +13,7 @@ var chatUser2 = {'name': 'Sally'}
 var chatUser3 = {'name': 'Dana'}
 
 var chat = describe('Chat Server', function(){
-  it('Should broadcast new user to all users', function(done) {
+  it('Should broadcast new user to all other users', function(done) {
    var client1 = io.connect(url, options)
     client1.on('connect', function(data) {
       client1.emit('add user', chatUser1)
