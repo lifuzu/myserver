@@ -10,6 +10,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var collections = require('./routes/collections');
 var login = require('./routes/login');
+var setting = require('./routes/setting');
 
 var app = express();
 
@@ -29,6 +30,7 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/collections', collections);
 app.use('/login', login);
+app.use('/setting', setting);
 
 var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -38,8 +40,7 @@ var allowCrossDomain = function(req, res, next) {
     // intercept OPTIONS method
     if ('OPTIONS' == req.method) {
       res.send(200);
-    }
-    else {
+    } else {
       next();
     }
 };
