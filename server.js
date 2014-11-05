@@ -2,6 +2,7 @@ var debug = require('debug')('myown');
 var app = require('./app');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var moment = require('moment');
 
 app.set('port', process.env.PORT || 3000);
 
@@ -22,6 +23,11 @@ io.on('connection', function(socket) {
   socket.on('message:send', function(message){
     console.log(message)
     io.emit('message:received', message);
+  });
+  // Support ionic user joined message
+  socket.on('user:joined', function(user) {
+    var message = user.name + ' joined the room';
+    io.emit('user:joined', {message: message, time: moment(), expires: moment().add(10) })
   });
   // When the client emits 'chat message', ...
   socket.on('chat message', function(message){
