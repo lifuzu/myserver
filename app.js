@@ -44,8 +44,8 @@ var allowCrossDomain = function(req, res, next) {
       next();
     }
 };
-app.use(allowCrossDomain);
-// app.use(cors());
+//app.use(allowCrossDomain);
+app.use(cors());
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

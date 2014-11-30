@@ -29,6 +29,10 @@ io.on('connection', function(socket) {
     var message = user.name + ' joined the room';
     io.emit('user:joined', {message: message, time: moment(), expires: moment().add(10) })
   });
+  // Support to receive image and emit
+  socket.on('event:new:image',function(data){
+    socket.broadcast.emit('event:incoming:image',data);
+  });
   // When the client emits 'chat message', ...
   socket.on('chat message', function(message){
     console.log({
